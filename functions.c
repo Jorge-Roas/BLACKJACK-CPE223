@@ -1,4 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
 int findValueOfCardDrawn(char cardDeck[52][3], int randomNumber, int valueOfCardDrawn, int valueOfHand) {
+    valueOfCardDrawn = 0;
     if (cardDeck[randomNumber][1] == 'K' || cardDeck[randomNumber][1] == 'Q' || cardDeck[randomNumber][1] == 'J') {
         valueOfCardDrawn = 10;
     }
@@ -183,8 +189,57 @@ void blackjackBetting(int *userBalance, int *gameRound) {
     }
 }
 
-void dealCards(char cardDeck[52][3], int index){
+int deckShuffleChar(char cardDeck[][3], int deckSize){
 
+    char temp[3];
 
+        for(int j = 0; j < ((rand() % 4) + 5); j++){
+            for(int i = 0; i < (deckSize); i++){
+                    int x = rand() % (deckSize);
 
+                    strcpy(temp, cardDeck[i]);
+                    strcpy(cardDeck[i], cardDeck[x]);
+                    strcpy(cardDeck[x], temp);
+
+            } // end for i
+        } // end for j
+
+// debugging <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    printf("\n\n%d\n\n", deckSize);
+
+    for (int i = 0; i < deckSize; i++) {
+        printf("%s ", cardDeck[i]);
+        //Sleep(50);
+    } // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+return(1);
 }
+
+
+
+void dealCards(char cardDeck[52][3], int *index, int *playerValueOfHand, int *valueOfCardDrawn, int *dealerVisibleCardValue, int *dealerNonVisibleCardValue, int *dealerValueOfHand){
+    *valueOfCardDrawn = 0;
+    for (; *index < 4; (*index)++) {  // Correctly modifying *index
+        if (*index == 0 || *index == 2) {
+            *valueOfCardDrawn = findValueOfCardDrawn(cardDeck, *index, *valueOfCardDrawn, *playerValueOfHand);
+            *playerValueOfHand += *valueOfCardDrawn;
+            displayCardDrawn(cardDeck, *index, *valueOfCardDrawn); // Fixed missing parenthesis
+            printf("\nValue of  player Hand: %d\n", *playerValueOfHand);  // Added newline
+        }
+        else if (*index == 1) {
+            *valueOfCardDrawn = findValueOfCardDrawn(cardDeck, *index, *valueOfCardDrawn, *dealerValueOfHand);
+            *dealerVisibleCardValue += *valueOfCardDrawn;
+            printf("\nDealers visible card: %d\n", *dealerVisibleCardValue);
+        }
+        else if (*index == 3) {
+            *valueOfCardDrawn = findValueOfCardDrawn(cardDeck, *index, *valueOfCardDrawn, *dealerValueOfHand);
+            *dealerNonVisibleCardValue += *valueOfCardDrawn;
+            printf("\nDealers non-visible card: %d\n", *dealerNonVisibleCardValue);
+        }
+        *dealerValueOfHand = *dealerNonVisibleCardValue + *dealerVisibleCardValue;
+    }
+    printf("\nThe dealers value of hand: %d\n", *dealerValueOfHand);
+}
+
+
+
+
